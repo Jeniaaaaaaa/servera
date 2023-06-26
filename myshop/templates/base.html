@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>{% block title %}Furry Friends{% endblock %}</title>
+    <link href="{% static "css/base.css" %}" rel="stylesheet">
+</head>
+<body>
+<div id="header">
+    <a href="/" class="logo">Furry Friends</a>
+    {% if user.is_authenticated %}
+    <p>Привет {{ user.username }}!
+        <form method="post" action="{% url 'logout' %}?next={{request.path}}">
+            {% csrf_token %}
+            <input type="submit" value="Выйти">
+          </form>
+{% else %}
+  <p>Вы неавторизованы</p>
+  <a href="{% url 'login'%}?next={{request.path}}"><input type="submit" value="Логин"></a>
+{% endif %}
+</div>
+<div id="subheader">
+<div class="cart">
+    {% with total_items=cart|length %}
+        {% if cart|length > 0 %}
+            Ваша корзина:
+            <a href="{% url "cart:cart_detail" %}">
+                {{ total_items }} item{{ total_items|pluralize }},
+                ${{ cart.get_total_price }}
+            </a>
+        {% else %}
+            Ваша корзина пуста.
+        {% endif %}
+    {% endwith %}
+</div>
+</div>
+<div id="content">
+    {% block content %}
+    {% endblock %}
+</div>
+</body>
+</html>
